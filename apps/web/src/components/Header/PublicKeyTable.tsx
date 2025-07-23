@@ -88,23 +88,23 @@ export const PublicKeyTable = ({
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full border rounded-lg overflow-hidden">
       <Table className="table-fixed w-full">
         <TableHeader>
           <TableRow>
-            <TableHead className="p-2 sm:p-3 text-left" style={{ width: '65%' }}>
+            <TableHead className="p-2 sm:p-3 text-left" style={{ width: '45%' }}>
               {tInput('publicKey')}
             </TableHead>
             <TableHead className="p-2 sm:p-3 text-left" style={{ width: '20%' }}>
               {tInput('note')}
             </TableHead>
-            <TableHead className="p-2 sm:p-3 text-left" style={{ width: '15%' }}></TableHead>
+            <TableHead className="p-2 sm:p-3 text-left" style={{ width: '25%' }}></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {publicKeys.map((key, index) => (
             <TableRow key={index} className="border-b border-gray-200 dark:border-gray-600 text-gray-500 font-normal">
-              <TableCell className="p-2 sm:p-3" style={{ width: '65%' }}>
+              <TableCell className="p-2 sm:p-3" style={{ width: '45%' }}>
                 <HoverCard>
                   <HoverCardTrigger asChild>
                     <div className="flex items-center min-w-0">
@@ -157,7 +157,7 @@ export const PublicKeyTable = ({
                   </Popover>
                 </div>
               </TableCell>
-              <TableCell className="p-2 sm:p-3" style={{ width: '15%' }}>
+              <TableCell className="p-2 sm:p-3" style={{ width: '25%' }}>
                 <Button variant="ghost" size="icon" className="flex-shrink-0" onClick={() => onCopy(key.publicKey)}>
                   <Copy className="size-4" />
                 </Button>
@@ -181,7 +181,7 @@ export const PublicKeyTable = ({
                         {tSettings('deleteConfirm.publicKey.description')}
                       </p>
                       <div className="flex justify-end gap-2 sm:gap-3">
-                        <Button variant="outline" size="sm" onClick={handleCancelDelete}>
+                        <Button variant="outline" sizes="m" onClick={handleCancelDelete}>
                           {tButtons('cancel')}
                         </Button>
                         <Button variant="destructive" size="sm" onClick={handleConfirmDelete}>

@@ -165,8 +165,8 @@ export const CreateKeyPairForm = ({
   }, [publicKey, mnemonic, isMnemonicValid, onSave, tMessages])
 
   return (
-    <div className="w-full pb-4 sm:pb-6">
-      <div className="w-full sm:w-3/4 space-y-4">
+    <div className="w-full">
+      <div className="w-full space-y-4">
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <Label htmlFor="mnemonicInput" className="text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -285,12 +285,13 @@ export const CreateKeyPairForm = ({
           />
         </div>
 
-        <div className="flex gap-3">
-          <Button variant="outline" onClick={onCancel}>
+        <div className="flex justify-end gap-3">
+          <Button variant="outline" size="sm" onClick={onCancel}>
             {tButtons('cancel')}
           </Button>
           <Button
             className="bg-blue-600 hover:bg-blue-700 text-white"
+            size="sm"
             onClick={handleSave}
             disabled={!isMnemonicValid || !publicKey || !mnemonic}
           >

@@ -116,11 +116,11 @@ export const KeyPairTable = ({
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full border rounded-lg overflow-hidden">
       <Table className="table-fixed w-full">
         <TableHeader>
           <TableRow>
-            <TableHead className="p-2 sm:p-3 text-left" style={{ width: '55%' }}>
+            <TableHead className="p-2 sm:p-3 text-left" style={{ width: '45%' }}>
               {tOwnerKeys('publicKey')}
             </TableHead>
             <TableHead className="p-2 sm:p-3 text-left" style={{ width: '20%' }}>
@@ -132,7 +132,7 @@ export const KeyPairTable = ({
         <TableBody>
           {keyPairs.map((keyPair, index) => (
             <TableRow key={index} className="border-b border-gray-200 dark:border-gray-600 text-gray-500 font-normal">
-              <TableCell className="p-2 sm:p-3" style={{ width: '55%' }}>
+              <TableCell className="p-2 sm:p-3" style={{ width: '45%' }}>
                 <HoverCard>
                   <HoverCardTrigger asChild>
                     <div className="flex items-center min-w-0">
@@ -225,31 +225,31 @@ export const KeyPairTable = ({
                               </div>
                             </div>
 
-                            <div className="flex items-start gap-1.5 p-3 bg-amber-50 dark:bg-amber-900/10 rounded-md border border-amber-200 dark:border-amber-800">
-                              <Info className="size-3 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-                              <p className="text-xs text-amber-800 dark:text-amber-200 leading-relaxed">
+                            <div className="flex items-center gap-1.5">
+                              <Info className="size-4 text-amber-600 flex-shrink-0" />
+                              <p className="text-xs text-amber-600 leading-relaxed">
                                 {tOwnerKeys('keepSafeWarning')}
                               </p>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <div className="grid grid-cols-2 gap-2">
                               <Button
-                                variant="outline"
+                                variant="default"
                                 size="sm"
-                                className="text-xs border-blue-200 hover:bg-blue-50 dark:border-blue-800 dark:hover:bg-blue-900/20"
                                 onClick={() => onCopyMnemonic(keyPair.mnemonic!)}
+                                className="bg-green-600 dark:bg-green-700 hover:bg-green-700 dark:hover:bg-green-800 text-white rounded-md cursor-pointer text-xs"
                               >
-                                <Copy className="size-3" />
                                 {tButtons('copy')}
+                                <Copy className="w-4 sm:w-5 h-4 sm:h-5" />
                               </Button>
                               <Button
-                                variant="outline"
+                                variant="default"
                                 size="sm"
-                                className="text-xs border-green-200 hover:bg-green-50 dark:border-green-800 dark:hover:bg-green-900/20"
                                 onClick={() => handleDownloadMnemonic(keyPair.mnemonic!, index)}
+                                className="bg-green-600 dark:bg-green-700 hover:bg-green-700 dark:hover:bg-green-800 text-white rounded-md cursor-pointer text-xs"
                               >
-                                <Download className="size-3" />
                                 {tButtons('download')}
+                                <Download className="w-4 sm:w-5 h-4 sm:h-5" />
                               </Button>
                             </div>
                           </div>
