@@ -22,9 +22,7 @@ export const ExternalPublicKeysTab = ({
   publicKeys,
   setPublicKeys
 }: ExternalPublicKeysTabProps) => {
-  const tSettings = useTranslations('settings.receiverKeys')
-  const tButtons = useTranslations('buttons')
-  const tMessages = useTranslations('messages')
+  const t = useTranslations()
 
   // Local state for add/edit form
   const [showAddForm, setShowAddForm] = useState(false)
@@ -51,16 +49,16 @@ export const ExternalPublicKeysTab = ({
 
   const handleSavePublicKey = useCallback(() => {
     if (!editingKey?.publicKey.trim()) {
-      setValidationError(tMessages('error.enterPublicKey'))
-      toast.error(tMessages('error.enterPublicKey'))
+      setValidationError(t('messages.error.enterPublicKey'))
+      toast.error(t('messages.error.enterPublicKey'))
       return
     }
 
     // Validate public key
     const validation = validatePublicKey(editingKey.publicKey.trim())
     if (!validation.isValid) {
-      setValidationError(validation.error || tMessages('error.invalidPublicKey'))
-      toast.error(validation.error || tMessages('error.invalidPublicKey'))
+      setValidationError(validation.error || t('messages.error.invalidPublicKey'))
+      toast.error(validation.error || t('messages.error.invalidPublicKey'))
       return
     }
 
@@ -71,21 +69,21 @@ export const ExternalPublicKeysTab = ({
         publicKey: editingKey.publicKey.trim(),
         note: editingKey.note?.trim() || ''
       }
-      toast.success(tMessages('success.publicKeyUpdated'))
+      toast.success(t('messages.success.publicKeyUpdated'))
     } else {
       // Add new key
       newPublicKeys.push({
         publicKey: editingKey.publicKey.trim(),
         note: editingKey.note?.trim() || ''
       })
-      toast.success(tMessages('success.publicKeySaved'))
+      toast.success(t('messages.success.publicKeySaved'))
     }
 
     setPublicKeys(newPublicKeys)
     setShowAddForm(false)
     setEditingKey(null)
     setValidationError('')
-  }, [editingKey, publicKeys, setPublicKeys, tMessages])
+  }, [editingKey, publicKeys, setPublicKeys, t])
 
   const handleCancelForm = useCallback(() => {
     setShowAddForm(false)
@@ -131,9 +129,9 @@ export const ExternalPublicKeysTab = ({
       {publicKeys.length === 0 ? (
         <EmptyState
           icon="/PublicKeys.svg"
-          title={tSettings('noKeys')}
-          description={tSettings('description')}
-          buttonText={tButtons('addReceiverKeys')}
+          title={t('settings.receiverKeys.noKeys')}
+          description={t('settings.receiverKeys.description')}
+          buttonText={t('buttons.addReceiverKeys')}
           onButtonClick={handleAddPublicKey}
         />
       ) : (
@@ -149,7 +147,7 @@ export const ExternalPublicKeysTab = ({
       {publicKeys.length > 0 && (
         <div className="flex justify-end gap-3 mt-6">
           <Button className="bg-blue-600 hover:bg-blue-700 text-white" onClick={handleAddPublicKey}>
-            {tButtons('addReceiverKeys')}
+            {t('buttons.addReceiverKeys')}
           </Button>
         </div>
       )}

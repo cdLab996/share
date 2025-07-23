@@ -29,11 +29,9 @@ export const EditNotePopover = ({
   onCancel,
   placeholder
 }: EditNotePopoverProps) => {
-  const tSettings = useTranslations('settings')
-  const tButtons = useTranslations('buttons')
-  const tInput = useTranslations('input')
+  const t = useTranslations()
 
-  const defaultPlaceholder = placeholder || tInput('optionalNote')
+  const defaultPlaceholder = placeholder || t('input.optionalNote')
 
   return (
     <Popover open={isOpen} onOpenChange={onOpenChange}>
@@ -45,7 +43,7 @@ export const EditNotePopover = ({
       <PopoverContent className="w-[90vw] sm:w-80">
         <div className="space-y-4">
           <Label htmlFor="editNote" className="text-sm font-medium text-gray-900 dark:text-gray-100">
-            {tSettings('editNote')}
+            {t('settings.editNote')}
           </Label>
           <Input
             id="editNote"
@@ -57,10 +55,10 @@ export const EditNotePopover = ({
           />
           <div className="flex justify-end gap-2">
             <Button variant="outline" size="sm" onClick={onCancel}>
-              {tButtons('cancel')}
+              {t('buttons.cancel')}
             </Button>
             <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white" onClick={onSave}>
-              {tButtons('save')}
+              {t('buttons.save')}
             </Button>
           </div>
         </div>

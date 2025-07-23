@@ -26,11 +26,7 @@ export const CreateKeyPairForm = ({
   onSave,
   onCancel
 }: CreateKeyPairFormProps) => {
-  const tSettings = useTranslations('settings.ownerKeys')
-  const tButtons = useTranslations('buttons')
-  const tMessages = useTranslations('messages')
-  const tInput = useTranslations('input')
-  const tProcessing = useTranslations('processing')
+  const t = useTranslations()
 
   const [mnemonic, setMnemonic] = useState(keyPair?.mnemonic || '')
   const [publicKey, setPublicKey] = useState(keyPair?.publicKey || '')
@@ -55,9 +51,9 @@ export const CreateKeyPairForm = ({
       onPublicKeyChange(newPublicKey)
       onMnemonicChange(mnemonicPhrase.trim())
 
-      toast.success(tMessages('success.keyPairGenerated'))
+      toast.success(t('messages.success.keyPairGenerated'))
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : tMessages('error.failedGenerateKeyPair')
+      const errorMessage = error instanceof Error ? error.message : t('messages.error.failedGenerateKeyPair')
       setMnemonicError(errorMessage)
       toast.error(errorMessage)
       console.error('Generate key pair error:', error)
@@ -66,7 +62,7 @@ export const CreateKeyPairForm = ({
     } finally {
       setIsGenerating(false)
     }
-  }, [onPublicKeyChange, onMnemonicChange, tMessages])
+  }, [onPublicKeyChange, onMnemonicChange, t])
 
   // Generate new mnemonic
   const handleGenerateNewMnemonic = useCallback(() => {
@@ -74,14 +70,14 @@ export const CreateKeyPairForm = ({
       const newMnemonic = generateMnemonic(128) // 12 words
       setMnemonic(newMnemonic)
       setMnemonicError('')
-      toast.success(tMessages('success.mnemonicGenerated'))
+      toast.success(t('messages.success.mnemonicGenerated'))
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : tMessages('error.failedGenerateMnemonic')
+      const errorMessage = error instanceof Error ? error.message : t('messages.error.failedGenerateMnemonic')
       setMnemonicError(errorMessage)
       toast.error(errorMessage)
       console.error('Generate mnemonic error:', error)
     }
-  }, [tMessages])
+  }, [t])
 
   // Handle mnemonic input change
   const handleMnemonicChange = useCallback((value: string) => {
@@ -124,12 +120,12 @@ export const CreateKeyPairForm = ({
   const copyToClipboard = useCallback((text: string, type: string) => {
     if (text && navigator.clipboard) {
       navigator.clipboard.writeText(text).then(() => {
-        toast.success(tMessages(`success.${type}Copied`))
+        toast.success(t(`messages.success.${type}Copied`))
       }).catch(() => {
-        toast.error(tMessages(`error.failedCopy${type}`))
+        toast.error(t(`messages.error.failedCopy${type}`))
       })
     }
-  }, [tMessages])
+  }, [t])
 
   // Download mnemonic
   const downloadMnemonic = useCallback(() => {
@@ -138,31 +134,31 @@ export const CreateKeyPairForm = ({
       const fileName = 'mnemonic.txt'
       downloadFile(blob, fileName)
 
-      toast.success(tMessages('success.mnemonicDownloaded'))
+      toast.success(t('messages.success.mnemonicDownloaded'))
     }
-  }, [mnemonic, tMessages])
+  }, [mnemonic, t])
 
   // Save key pair
   const handleSave = useCallback(() => {
     if (!publicKey || !mnemonic) {
-      toast.error(tMessages('error.keyPairIncomplete'))
+      toast.error(t('messages.error.keyPairIncomplete'))
       return
     }
 
     if (!isMnemonicValid) {
-      toast.error(tMessages('error.noMnemonic'))
+      toast.error(t('messages.error.noMnemonic'))
       return
     }
 
     // Validate public key
     const validation = validatePublicKey(publicKey)
     if (!validation.isValid) {
-      toast.error(validation.error || tMessages('error.invalidPublicKey'))
+      toast.error(validation.error || t('messages.error.invalidPublicKey'))
       return
     }
 
     onSave()
-  }, [publicKey, mnemonic, isMnemonicValid, onSave, tMessages])
+  }, [publicKey, mnemonic, isMnemonicValid, onSave, t])
 
   return (
     <div className="w-full">
@@ -170,7 +166,7 @@ export const CreateKeyPairForm = ({
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <Label htmlFor="mnemonicInput" className="text-sm font-medium text-gray-900 dark:text-gray-100">
-              {tSettings('mnemonicPhrase')}
+              {t('settings.ownerKeys.mnemonicPhrase')}
             </Label>
             <Button
               size="sm"
@@ -178,7 +174,7 @@ export const CreateKeyPairForm = ({
               onClick={handleGenerateNewMnemonic}
             >
               <Shuffle className="size-4" />
-              {tButtons('generateNew')}
+              {t('buttons.generateNew')}
             </Button>
           </div>
 
@@ -206,7 +202,7 @@ export const CreateKeyPairForm = ({
                         !mnemonic || (!isMnemonicValid && !mnemonic)
                     }
                   )}
-                  placeholder={tSettings('generateNewMnemonic')}
+                  placeholder={t('settings.ownerKeys.generateNewMnemonic')}
                 />
               </div>
             </div>
@@ -220,19 +216,19 @@ export const CreateKeyPairForm = ({
 
           {mnemonic && !isMnemonicValid && (
             <p className="text-left text-xs text-red-600 dark:text-red-400">
-              {tSettings('invalidMnemonic')}
+              {t('settings.ownerKeys.invalidMnemonic')}
             </p>
           )}
 
           {mnemonic && isMnemonicValid && (
             <p className="text-left text-xs text-green-600 dark:text-green-400">
-              {tSettings('validMnemonic')}
+              {t('settings.ownerKeys.validMnemonic')}
             </p>
           )}
 
           {!mnemonic && (
             <p className="text-left text-xs text-gray-500 dark:text-gray-400">
-              {tSettings('mnemonicNote')}
+              {t('settings.ownerKeys.mnemonicNote')}
             </p>
           )}
         </div>
@@ -241,12 +237,12 @@ export const CreateKeyPairForm = ({
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="generatedPublicKey" className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                {tSettings('publicKey')}
+                {t('settings.ownerKeys.publicKey')}
               </Label>
               {isGenerating && (
                 <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
                   <RefreshCw className="size-3 mr-1 animate-spin" />
-                  {tProcessing('generating')}
+                  {t('processing.generating')}
                 </div>
               )}
             </div>
@@ -257,7 +253,7 @@ export const CreateKeyPairForm = ({
                 value={publicKey}
                 readOnly
                 className="w-full font-mono text-xs sm:text-sm break-all resize-none rounded-md border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-200 cursor-default"
-                placeholder={tSettings('publicKeyPlaceholder')}
+                placeholder={t('settings.ownerKeys.publicKeyPlaceholder')}
               />
             </div>
           </div>
@@ -266,14 +262,14 @@ export const CreateKeyPairForm = ({
         {mnemonic && isMnemonicValid && (
           <div className="space-y-2">
             <p className="text-left text-xs text-amber-600 dark:text-amber-400">
-              {tSettings('keepSafe')}
+              {t('settings.ownerKeys.keepSafe')}
             </p>
           </div>
         )}
 
         <div className="space-y-2">
           <Label htmlFor="keyPairNote" className="text-sm font-medium text-gray-900 dark:text-gray-100">
-            {tInput('note')}
+            {t('input.note')}
           </Label>
           <Input
             id="keyPairNote"
@@ -281,13 +277,13 @@ export const CreateKeyPairForm = ({
             value={keyPair?.note || ''}
             onChange={(e) => onNoteChange(e.target.value)}
             className="w-full font-mono text-xs sm:text-sm break-all resize-none rounded-md border border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-200"
-            placeholder={tInput('addNote')}
+            placeholder={t('input.addNote')}
           />
         </div>
 
         <div className="flex justify-end gap-3">
           <Button variant="outline" size="sm" onClick={onCancel}>
-            {tButtons('cancel')}
+            {t('buttons.cancel')}
           </Button>
           <Button
             className="bg-blue-600 hover:bg-blue-700 text-white"
@@ -295,7 +291,7 @@ export const CreateKeyPairForm = ({
             onClick={handleSave}
             disabled={!isMnemonicValid || !publicKey || !mnemonic}
           >
-            {tButtons('saveKeyPair')}
+            {t('buttons.saveKeyPair')}
           </Button>
         </div>
       </div>

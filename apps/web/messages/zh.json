@@ -71,6 +71,7 @@
       "mnemonicCopied": "助记词已复制到剪贴板",
       "publicKeySaved": "公钥保存成功",
       "keyPairSaved": "密钥对保存成功",
+      "publicKeyUpdated": "公钥更新成功",
       "keyPairDeleted": "密钥对删除成功",
       "publicKeyDeleted": "公钥删除成功",
       "noteUpdated": "备注更新成功",
@@ -91,6 +92,8 @@
       "failedCopyText": "复制文本失败",
       "failedCopyPublicKey": "复制公钥失败",
       "failedCopyMnemonic": "复制助记词失败",
+      "failedGenerateKeyPair": "从助记词生成密钥对失败",
+      "failedGenerateMnemonic": "生成助记词失败",
       "invalidPublicKey": "无效的公钥",
       "invalidPrivateKey": "无效的私钥",
       "invalidMnemonic": "无效的助记词。请检查您的输入。",
@@ -112,7 +115,8 @@
       "passwordEncryptedNotSupported": "此模式不支持密码加密内容",
       "signedFilesNotSupported": "暂不支持签名文件",
       "multipleFilesNotSupported": "请一次只选择一个文件",
-      "noMatchingPrivateKey": "未找到此公钥对应的私钥"
+      "noMatchingPrivateKey": "未找到此公钥对应的私钥",
+      "selectValidBackupFile": "请选择有效的备份文件"
     },
     "info": {
       "detectedPublicKeyEncryptedText": "检测到公钥加密文本，切换到解密模式",

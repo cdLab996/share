@@ -71,6 +71,7 @@
       "mnemonicCopied": "Mnemonic copied to clipboard",
       "publicKeySaved": "Public key saved successfully",
       "keyPairSaved": "Key pair saved successfully",
+      "publicKeyUpdated": "Public key updated successfully",
       "keyPairDeleted": "Key pair deleted successfully",
       "publicKeyDeleted": "Public key deleted successfully",
       "noteUpdated": "Note updated successfully",
@@ -91,6 +92,8 @@
       "failedCopyText": "Failed to copy text",
       "failedCopyPublicKey": "Failed to copy public key",
       "failedCopyMnemonic": "Failed to copy mnemonic",
+      "failedGenerateKeyPair": "Failed to generate key pair from mnemonic",
+      "failedGenerateMnemonic": "Failed to generate mnemonic",
       "invalidPublicKey": "Invalid public key",
       "invalidPrivateKey": "Invalid private key",
       "invalidMnemonic": "Invalid mnemonic phrase. Please check your input.",
@@ -112,7 +115,8 @@
       "passwordEncryptedNotSupported": "Password encrypted content is not supported in this mode",
       "signedFilesNotSupported": "Signed files are not supported yet",
       "multipleFilesNotSupported": "Please select only one file at a time",
-      "noMatchingPrivateKey": "No matching private key found for this public key"
+      "noMatchingPrivateKey": "No matching private key found for this public key",
+      "selectValidBackupFile": "Please select a valid backup file"
     },
     "info": {
       "detectedPublicKeyEncryptedText": "Detected public key encrypted text, switching to decrypt mode",

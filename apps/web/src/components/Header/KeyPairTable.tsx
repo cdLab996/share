@@ -41,10 +41,7 @@ export const KeyPairTable = ({
   onDelete,
   onSaveNote
 }: KeyPairTableProps) => {
-  const tSettings = useTranslations('settings')
-  const tOwnerKeys = useTranslations('settings.ownerKeys')
-  const tButtons = useTranslations('buttons')
-  const tInput = useTranslations('input')
+  const t = useTranslations()
 
   const [isNotePopoverOpen, setIsNotePopoverOpen] = useState(false)
   const [isDeletePopoverOpen, setIsDeletePopoverOpen] = useState(false)
@@ -121,10 +118,10 @@ export const KeyPairTable = ({
         <TableHeader>
           <TableRow>
             <TableHead className="p-2 sm:p-3 text-left" style={{ width: '45%' }}>
-              {tOwnerKeys('publicKey')}
+              {t('settings.ownerKeys.publicKey')}
             </TableHead>
             <TableHead className="p-2 sm:p-3 text-left" style={{ width: '20%' }}>
-              {tInput('note')}
+              {t('input.note')}
             </TableHead>
             <TableHead className="p-2 sm:p-3 text-left" style={{ width: '25%' }}></TableHead>
           </TableRow>
@@ -164,7 +161,7 @@ export const KeyPairTable = ({
                     <PopoverContent className="w-[90vw] sm:w-80">
                       <div className="space-y-4">
                         <Label htmlFor="editKeyPairNote" className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          {tSettings('editNote')}
+                          {t('settings.editNote')}
                         </Label>
                         <Input
                           id="editKeyPairNote"
@@ -172,14 +169,14 @@ export const KeyPairTable = ({
                           value={editingNote}
                           onChange={(e) => setEditingNote(e.target.value)}
                           className="w-full font-mono text-xs sm:text-sm break-all resize-none rounded-md border border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-200"
-                          placeholder={tInput('addNote')}
+                          placeholder={t('input.addNote')}
                         />
                         <div className="flex justify-end gap-2">
                           <Button variant="outline" size="sm" onClick={handleCancelNote}>
-                            {tButtons('cancel')}
+                            {t('buttons.cancel')}
                           </Button>
                           <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white" onClick={handleSaveNote}>
-                            {tButtons('save')}
+                            {t('buttons.save')}
                           </Button>
                         </div>
                       </div>
@@ -208,7 +205,7 @@ export const KeyPairTable = ({
                             <Eye className="size-3 sm:size-4 text-blue-600 dark:text-blue-400" />
                           </div>
                           <h4 className="text-sm sm:text-lg font-semibold text-gray-900 dark:text-gray-100">
-                            {tOwnerKeys('viewMnemonic')}
+                            {t('settings.ownerKeys.viewMnemonic')}
                           </h4>
                         </div>
 
@@ -228,7 +225,7 @@ export const KeyPairTable = ({
                             <div className="flex items-center gap-1.5">
                               <Info className="size-4 text-amber-600 flex-shrink-0" />
                               <p className="text-xs text-amber-600 leading-relaxed">
-                                {tOwnerKeys('keepSafeWarning')}
+                                {t('settings.ownerKeys.keepSafeWarning')}
                               </p>
                             </div>
 
@@ -239,7 +236,7 @@ export const KeyPairTable = ({
                                 onClick={() => onCopyMnemonic(keyPair.mnemonic!)}
                                 className="bg-green-600 dark:bg-green-700 hover:bg-green-700 dark:hover:bg-green-800 text-white rounded-md cursor-pointer text-xs"
                               >
-                                {tButtons('copy')}
+                                {t('buttons.copy')}
                                 <Copy className="w-4 sm:w-5 h-4 sm:h-5" />
                               </Button>
                               <Button
@@ -248,7 +245,7 @@ export const KeyPairTable = ({
                                 onClick={() => handleDownloadMnemonic(keyPair.mnemonic!, index)}
                                 className="bg-green-600 dark:bg-green-700 hover:bg-green-700 dark:hover:bg-green-800 text-white rounded-md cursor-pointer text-xs"
                               >
-                                {tButtons('download')}
+                                {t('buttons.download')}
                                 <Download className="w-4 sm:w-5 h-4 sm:h-5" />
                               </Button>
                             </div>
@@ -272,18 +269,18 @@ export const KeyPairTable = ({
                             <Info className="size-3 sm:size-4 text-red-600 dark:text-red-400" />
                           </div>
                           <h4 className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-100">
-                            {tSettings('deleteConfirm.keyPair.title')}
+                            {t('settings.deleteConfirm.keyPair.title')}
                           </h4>
                         </div>
                         <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                          {tSettings('deleteConfirm.keyPair.description')}
+                          {t('settings.deleteConfirm.keyPair.description')}
                         </p>
                         <div className="flex justify-end gap-2 sm:gap-3">
                           <Button variant="outline" size="sm" onClick={handleCancelDelete}>
-                            {tButtons('cancel')}
+                            {t('buttons.cancel')}
                           </Button>
                           <Button variant="destructive" size="sm" onClick={handleConfirmDelete}>
-                            {tButtons('delete')}
+                            {t('buttons.delete')}
                           </Button>
                         </div>
                       </div>

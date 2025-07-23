@@ -43,10 +43,7 @@ export const ImportDialog = ({
   setKeyPairs,
   setStoredPasswordHash
 }: ImportDialogProps) => {
-  const tSettings = useTranslations('settings.import')
-  const tButtons = useTranslations('buttons')
-  const tMessages = useTranslations('messages')
-  const tProcessing = useTranslations('processing')
+  const t = useTranslations()
 
   const [importPassword, setImportPassword] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
@@ -99,24 +96,24 @@ export const ImportDialog = ({
         }
       } catch (error) {
         console.error('Failed to analyze backup file:', error)
-        toast.error(tMessages('error.invalidBackupFile'))
+        toast.error(t('messages.error.invalidBackupFile'))
         setIsEncryptedFile(false)
         setBackupData(null)
       }
     }
 
     analyzeFile()
-  }, [selectedFile, tMessages])
+  }, [selectedFile, t])
 
   const handleImport = useCallback(async () => {
     if (!selectedFile || !backupData) {
-      toast.error(tMessages('error.selectValidBackupFile'))
+      toast.error(t('messages.error.selectValidBackupFile'))
       return
     }
 
     // For encrypted files, require password
     if (isEncryptedFile && (!importPassword || importPassword.length !== 6)) {
-      toast.error(tMessages('error.enterImportPassword'))
+      toast.error(t('messages.error.enterImportPassword'))
       return
     }
 
@@ -131,7 +128,7 @@ export const ImportDialog = ({
         // Verify password first
         const isPasswordValid = await verifyPasswordFn(encryptedData.passwordHash, importPassword)
         if (!isPasswordValid) {
-          toast.error(tMessages('error.invalidPassword'))
+          toast.error(t('messages.error.invalidPassword'))
           setIsProcessing(false)
           return
         }
@@ -182,7 +179,7 @@ export const ImportDialog = ({
 
       await new Promise(resolve => setTimeout(resolve, 500))
 
-      toast.success(tMessages('success.backupImported'))
+      toast.success(t('messages.success.backupImported'))
 
       setImportPassword('')
       setIsEncryptedFile(false)
@@ -191,11 +188,11 @@ export const ImportDialog = ({
 
     } catch (error) {
       console.error('Import failed:', error)
-      toast.error(tMessages('error.failedImportBackup'))
+      toast.error(t('messages.error.failedImportBackup'))
     } finally {
       setIsProcessing(false)
     }
-  }, [selectedFile, backupData, isEncryptedFile, importPassword, setPublicKeys, setKeyPairs, setStoredPasswordHash, onImport, tMessages])
+  }, [selectedFile, backupData, isEncryptedFile, importPassword, setPublicKeys, setKeyPairs, setStoredPasswordHash, onImport, t])
 
   // Handle file area click
   const handleFileAreaClick = useCallback(() => {
@@ -212,7 +209,7 @@ export const ImportDialog = ({
           <ChevronLeft className="size-3 sm:size-4" />
         </Button>
         <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100">
-          {tSettings('title')}
+          {t('settings.import.title')}
         </h2>
       </div>
 
@@ -226,13 +223,13 @@ export const ImportDialog = ({
             >
               <Image src="/FileText.svg" alt="File Icon" width={32} height={32} className="size-8 sm:size-10 md:size-12 text-blue-500 mx-auto mb-2" />
               <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-3 sm:mb-4 md:mb-6 px-2">
-                {tSettings('description')}
+                {t('settings.import.description')}
               </p>
               <Button
                 className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm px-3 sm:px-4 py-2"
                 onClick={(e) => { e.stopPropagation(); handleFileAreaClick() }}
               >
-                {tButtons('selectBackupFile')}
+                {t('buttons.selectBackupFile')}
               </Button>
             </div>
           ) : (
@@ -250,14 +247,14 @@ export const ImportDialog = ({
                   className="text-blue-600 hover:text-blue-700 text-xs sm:text-sm px-2 py-1"
                   onClick={(e) => { e.stopPropagation(); handleFileAreaClick() }}
                 >
-                  {tButtons('changeFile')}
+                  {t('buttons.changeFile')}
                 </Button>
               </div>
 
               {isEncryptedFile && (
                 <div className="space-y-2 sm:space-y-3">
                   <Label htmlFor="import-password" className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    {tSettings('password')}
+                    {t('settings.import.password')}
                   </Label>
                   <div className="flex justify-center min-w-max">
                     <CustomOtpInput
@@ -268,7 +265,7 @@ export const ImportDialog = ({
                     />
                   </div>
                   <p className="text-xs text-gray-500 dark:text-gray-400 text-center px-4">
-                    {tSettings('passwordHint')}
+                    {t('settings.import.passwordHint')}
                   </p>
                 </div>
               )}
@@ -284,14 +281,14 @@ export const ImportDialog = ({
             className="w-full sm:w-auto order-2 sm:order-1 text-sm py-2.5"
             onClick={onCancel}
           >
-            {tButtons('cancel')}
+            {t('buttons.cancel')}
           </Button>
           <Button
             className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white order-1 sm:order-2 text-sm py-2.5"
             disabled={!selectedFile || !backupData || (isEncryptedFile && importPassword.length !== 6) || isProcessing}
             onClick={handleImport}
           >
-            {isProcessing ? tProcessing('importing') : tButtons('import')}
+            {isProcessing ? t('processing.importing') : t('buttons.import')}
           </Button>
         </div>
       )}

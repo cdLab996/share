@@ -28,8 +28,7 @@ export const KeysTab = ({
   editKeyPair,
   setEditKeyPair
 }: KeysTabProps) => {
-  const tOwnerKeys = useTranslations('settings.ownerKeys')
-  const tButtons = useTranslations('buttons')
+  const t = useTranslations()
 
   const {
     handleCreateKeyPair,
@@ -106,9 +105,9 @@ export const KeysTab = ({
       {keyPairs.length === 0 ? (
         <EmptyState
           icon="/PublicKeys.svg"
-          title={tOwnerKeys('noKeys')}
-          description={tOwnerKeys('description')}
-          buttonText={tButtons('createKey')}
+          title={t('settings.ownerKeys.noKeys')}
+          description={t('settings.ownerKeys.description')}
+          buttonText={t('buttons.createKey')}
           onButtonClick={handleCreateKeyPair}
         />
       ) : (
@@ -125,7 +124,7 @@ export const KeysTab = ({
       {keyPairs.length > 0 && (
         <div className="flex justify-end gap-3 mt-6">
           <Button className="bg-blue-600 hover:bg-blue-700 text-white" size="sm" onClick={handleCreateKeyPair}>
-            {tButtons('createKey')}
+            {t('buttons.createKey')}
           </Button>
         </div>
       )}

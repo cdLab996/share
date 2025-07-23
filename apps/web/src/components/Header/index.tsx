@@ -1,4 +1,3 @@
-/* eslint-disable import/order */
 'use client'
 
 import {
@@ -16,36 +15,23 @@ import { Settings, Lock, X } from 'lucide-react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { useState, useCallback } from 'react'
-import { toast } from 'sonner'
 
 import { ExternalPublicKeysTab } from '@/components/Header/ExternalPublicKeysTab'
-import { ImportDialog } from '@/components/Header/ImportDialog'
 import { GeneralTab } from '@/components/Header/GeneralTab'
 import { KeysTab } from '@/components/Header/KeysTab'
-import { PublicKeyForm } from '@/components/Header/PublicKeyForm'
 import { STORAGE_KEYS } from '@/constants'
 import { useSecureLocalStorage } from '@/hooks'
-import { validatePublicKey } from '@/lib/key'
 import { PublicKey, KeyPair, TabType } from '@/types'
 
 export default function Header() {
-  const t = useTranslations('header')
-  const tSettings = useTranslations('settings')
-  const tMessages = useTranslations('messages')
+  const t = useTranslations()
 
   // Main state
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<TabType>('General')
 
-  // Import related state
-  const [showImportDialog, setShowImportDialog] = useState(false)
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
-
   // Public key management state
   const [publicKeys, setPublicKeys, removePublicKeys] = useSecureLocalStorage<PublicKey[]>(STORAGE_KEYS.PUBLIC_KEYS, [])
-  const [showAddKey, setShowAddKey] = useState(false)
-  const [editKey, setEditKey] = useState<PublicKey | null>(null)
-  const [validationError, setValidationError] = useState('')
 
   // Key pair management state
   const [keyPairs, setKeyPairs, removeKeyPairs] = useSecureLocalStorage<KeyPair[]>(STORAGE_KEYS.KEY_PAIRS, [])
@@ -58,14 +44,9 @@ export default function Header() {
 
   // Reset all states function
   const resetAllStates = useCallback(() => {
-    setShowImportDialog(false)
-    setSelectedFile(null)
-    setShowAddKey(false)
-    setEditKey(null)
     setShowChangePassword(false)
     setShowCreateKeyPair(false)
     setEditKeyPair(null)
-    setValidationError('')
   }, [])
 
   // Tab change handler
@@ -83,74 +64,21 @@ export default function Header() {
     resetAllStates()
   }, [resetAllStates])
 
-  // File handling
-  const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    setSelectedFile(file || null)
-  }, [])
-
-  const handleImport = useCallback(() => {
-    setShowImportDialog(false)
-    setSelectedFile(null)
-    // Add import logic here
-  }, [])
-
-  // Handle saving a public key
-  const handleSavePublicKey = useCallback(() => {
-    if (!editKey) {
-      setValidationError('No public key data provided')
-      toast.error('No public key data provided')
-      return
-    }
-
-    // Validate public key
-    const validation = validatePublicKey(editKey.publicKey)
-    if (!validation.isValid) {
-      setValidationError(validation.error || 'Invalid public key')
-      toast.error(validation.error || 'Invalid public key')
-      return
-    }
-
-    const newPublicKeys = [...publicKeys]
-    if (editKey.index !== undefined) {
-      // Update existing key
-      newPublicKeys[editKey.index] = {
-        publicKey: editKey.publicKey,
-        note: editKey.note || ''
-      }
-    } else {
-      // Add new key
-      newPublicKeys.push({
-        publicKey: editKey.publicKey,
-        note: editKey.note || ''
-      })
-    }
-
-    setPublicKeys(newPublicKeys)
-    toast.success(tMessages('success.publicKeySaved'))
-    setShowAddKey(false)
-    setEditKey(null)
-    setValidationError('')
-  }, [editKey, publicKeys, setPublicKeys, setShowAddKey, setEditKey, tMessages])
-
   // Get tab name with translation
   const getTabName = (tab: TabType) => {
     switch (tab) {
       case 'General':
-        return tSettings('tabs.general')
+        return t('settings.tabs.general')
       case 'Owner Keys':
-        return tSettings('tabs.ownerKeys')
+        return t('settings.tabs.ownerKeys')
       case 'Receiver Keys':
-        return tSettings('tabs.receiverKeys')
+        return t('settings.tabs.receiverKeys')
       case 'Security Password':
-        return tSettings('tabs.securityPassword')
+        return t('settings.tabs.securityPassword')
       default:
         return tab
     }
   }
-
-  // Check if we should show sub-forms instead of tabs
-  const showSubForm = showImportDialog || showAddKey || showChangePassword
 
   // Render main tab content
   const renderMainTabContent = () => {
@@ -170,9 +98,6 @@ export default function Header() {
       setEditKeyPair,
       showChangePassword,
       setShowChangePassword,
-      setShowImportDialog,
-      setShowAddKey,
-      setEditKey,
       setActiveTab
     }
 
@@ -222,55 +147,6 @@ export default function Header() {
     )
   }
 
-  // Render sub-form content
-  const renderSubFormContent = () => {
-    if (showImportDialog) {
-      return (
-        <ImportDialog
-          selectedFile={selectedFile}
-          onFileSelect={handleFileSelect}
-          onImport={handleImport}
-          onCancel={() => setShowImportDialog(false)}
-          setPublicKeys={setPublicKeys}
-          setKeyPairs={setKeyPairs}
-          setStoredPasswordHash={setStoredPasswordHash}
-        />
-      )
-    }
-
-    if (showAddKey) {
-      return (
-        <div className="p-4 sm:p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Button variant="ghost" size="icon" onClick={() => setShowAddKey(false)}>
-              <span className="sr-only">Back</span>
-              ←
-            </Button>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-              {getTabName('Receiver Keys')}
-            </h2>
-          </div>
-          <div className="flex justify-center text-center pt-2 pb-6">
-            <PublicKeyForm
-              editKey={editKey}
-              validationError={validationError}
-              onPublicKeyChange={(value) => setEditKey(prev => ({ ...prev || { publicKey: '', note: '' }, publicKey: value }))}
-              onNoteChange={(value) => setEditKey(prev => ({ ...prev || { publicKey: '', note: '' }, note: value }))}
-              onSave={handleSavePublicKey}
-              onCancel={() => {
-                setShowAddKey(false)
-                setEditKey(null)
-                setValidationError('')
-              }}
-            />
-          </div>
-        </div>
-      )
-    }
-
-    return null
-  }
-
   return (
     <header className="relative w-full py-6 z-10 bg-[#0052D9] dark:bg-[#0E0F11] text-white dark:text-gray-200 overflow-hidden">
       <Lock className="hidden md:block absolute size-34 top-1/3 -left-12 text-[#4c85e4] dark:text-[#292929]" />
@@ -292,7 +168,7 @@ export default function Header() {
             className="size-10 sm:size-12 text-blue-500 mx-auto mb-2 hidden dark:block"
           />
           <h3 className="text-sm md:text-base font-medium text-white dark:text-gray-300">
-            {t('title')}
+            {t('header.title')}
           </h3>
         </div>
 
@@ -306,7 +182,7 @@ export default function Header() {
               <DialogHeader className="border-b p-4 bg-white dark:bg-gray-900">
                 <div className="flex justify-between items-center">
                   <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                    {tSettings('title')}
+                    {t('settings.title')}
                   </DialogTitle>
                   <Button
                     variant="ghost"
@@ -320,7 +196,7 @@ export default function Header() {
               </DialogHeader>
 
               <div className="flex-1 overflow-y-auto bg-[#F9FAFB] dark:bg-gray-900">
-                {showSubForm ? renderSubFormContent() : renderMainTabContent()}
+                {renderMainTabContent()}
               </div>
             </DialogContent>
           </Dialog>
