@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-unused-vars */
 import {
   Button,
   Popover,
@@ -32,7 +30,6 @@ interface GeneralTabProps {
   removeKeyPairs: () => void
   storedPasswordHash: string | null
   removePasswordHash: () => void
-  setShowImportDialog: (value: boolean) => void
 }
 
 interface BackupData {
@@ -49,12 +46,9 @@ export const GeneralTab = ({
   keyPairs,
   removeKeyPairs,
   storedPasswordHash,
-  removePasswordHash,
-  setShowImportDialog
+  removePasswordHash
 }: GeneralTabProps) => {
-  const t = useTranslations('settings.general')
-  const tButtons = useTranslations('buttons')
-  const tMessages = useTranslations('messages')
+  const t = useTranslations()
 
   const [isResetPopoverOpen, setIsResetPopoverOpen] = useState(false)
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false)
@@ -74,8 +68,8 @@ export const GeneralTab = ({
     removeKeyPairs()
     removePasswordHash()
     setIsResetPopoverOpen(false)
-    toast.success(tMessages('success.accountReset'))
-  }, [removePublicKeys, removeKeyPairs, removePasswordHash, tMessages])
+    toast.success(t('messages.success.accountReset'))
+  }, [removePublicKeys, removeKeyPairs, removePasswordHash, t])
 
   // Create backup data
   const createBackupData = useCallback((): BackupData => {
@@ -91,7 +85,7 @@ export const GeneralTab = ({
   // Handle backup export using cryptoWorker
   const handleExport = useCallback(async () => {
     if (!exportPassword || exportPassword.length !== 6) {
-      toast.error(tMessages('error.enterExportPassword'))
+      toast.error(t('messages.error.enterExportPassword'))
       return
     }
 
@@ -144,106 +138,72 @@ export const GeneralTab = ({
 
       setIsExportDialogOpen(false)
       setExportPassword('')
-      toast.success(tMessages('success.backupCreated'))
+      toast.success(t('messages.success.backupCreated'))
     } catch (error) {
       console.error('Export failed:', error)
-      toast.error(tMessages('error.failedCreateBackup'))
+      toast.error(t('messages.error.failedCreateBackup'))
     } finally {
       setIsProcessing(false)
     }
-  }, [exportPassword, createBackupData, tMessages])
+  }, [exportPassword, createBackupData, t])
 
   return (
-    <div className="p-4 sm:p-6">
-      <div className="space-y-4 sm:space-y-6">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{t('title')}</h2>
+    <div className="">
+      <ThemeSelector className='px-4' />
+      <LanguageSelector className='px-4' />
 
-        <ThemeSelector />
-        <LanguageSelector />
-
-        {/* <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-3 sm:py-4 border-b border-gray-200 dark:border-gray-700 gap-2 sm:gap-0">
-          <div>
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">{t('backupData.title')}</h3>
-            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">
-              {t('backupData.description')}
-            </p>
-          </div>
-          <Button
-            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
-            onClick={() => setIsExportDialogOpen(true)}
-          >
-            {tButtons('export')}
-          </Button>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-4 py-3 sm:py-4 gap-2 sm:gap-0">
+        <div className="pr-4">
+          <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">{t('settings.general.resetAccount.title')}</h3>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            {t('settings.general.resetAccount.description')}
+          </p>
         </div>
-
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-3 sm:py-4 border-b border-gray-200 dark:border-gray-700 gap-2 sm:gap-0">
-          <div>
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">{t('importData.title')}</h3>
-            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">
-              {t('importData.description')}
-            </p>
-          </div>
-          <Button
-            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
-            onClick={() => setShowImportDialog(true)}
-          >
-            {tButtons('import')}
-          </Button>
-        </div> */}
-
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-3 sm:py-4 gap-2 sm:gap-0">
-          <div>
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">{t('resetAccount.title')}</h3>
-            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">
-              {t('resetAccount.description')}
-            </p>
-          </div>
-          <Popover open={isResetPopoverOpen} onOpenChange={setIsResetPopoverOpen}>
-            <PopoverTrigger asChild>
-              <Button variant="destructive" className="w-full sm:w-auto">
-                {tButtons('reset')}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[90vw] sm:w-80">
-              <div className="space-y-3 sm:space-y-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
-                    <Info className="size-3 sm:size-4 text-red-600 dark:text-red-400" />
-                  </div>
-                  <h4 className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-100">
-                    {t('resetAccount.confirmTitle')}
-                  </h4>
+        <Popover open={isResetPopoverOpen} onOpenChange={setIsResetPopoverOpen}>
+          <PopoverTrigger asChild>
+            <Button variant="destructive" size="sm" className="w-full sm:w-auto">
+              {t('buttons.reset')}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[90vw] sm:w-80">
+            <div className="space-y-3 sm:space-y-4">
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
+                  <Info className="size-3 sm:size-4 text-red-600 dark:text-red-400" />
                 </div>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                  {t('resetAccount.confirmDescription')}
-                </p>
-                <div className="flex justify-end gap-2 sm:gap-3">
-                  <Button variant="outline" onClick={() => setIsResetPopoverOpen(false)}>
-                    {tButtons('cancel')}
-                  </Button>
-                  <Button variant="destructive" onClick={handleReset}>
-                    {tButtons('reset')}
-                  </Button>
-                </div>
+                <h4 className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  {t('settings.general.resetAccount.confirmTitle')}
+                </h4>
               </div>
-            </PopoverContent>
-          </Popover>
-        </div>
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                {t('settings.general.resetAccount.confirmDescription')}
+              </p>
+              <div className="flex justify-end gap-2 sm:gap-3">
+                <Button variant="outline" size="sm" onClick={() => setIsResetPopoverOpen(false)}>
+                  {t('buttons.cancel')}
+                </Button>
+                <Button variant="destructive" size="sm" onClick={handleReset}>
+                  {t('buttons.reset')}
+                </Button>
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
 
       {/* Export Dialog */}
       <Dialog open={isExportDialogOpen} onOpenChange={setIsExportDialogOpen}>
         <DialogContent className="w-[95vw] sm:max-w-[430px]">
           <DialogHeader>
-            <DialogTitle>{t('export.title')}</DialogTitle>
+            <DialogTitle>{t('settings.export.title')}</DialogTitle>
             <DialogDescription>
-              {t('export.description')}
+              {t('settings.export.description')}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="export-password">{t('export.password')}</Label>
+              <Label htmlFor="export-password">{t('settings.export.password')}</Label>
               <CustomOtpInput
                 length={6}
                 value={exportPassword}
@@ -255,14 +215,14 @@ export const GeneralTab = ({
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsExportDialogOpen(false)}>
-              {tMessages('buttons.cancel')}
+              {t('buttons.cancel')}
             </Button>
             <Button
               onClick={handleExport}
               disabled={exportPassword.length !== 6 || isProcessing}
               className="bg-blue-600 hover:bg-blue-700 text-white"
             >
-              {isProcessing ? tMessages('processing.exporting') : tMessages('buttons.export')}
+              {isProcessing ? t('processing.exporting') : t('buttons.export')}
             </Button>
           </DialogFooter>
         </DialogContent>

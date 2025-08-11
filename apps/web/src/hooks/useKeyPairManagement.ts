@@ -23,6 +23,11 @@ export const useKeyPairManagement = ({
   }, [setEditKeyPair, setShowCreateKeyPair])
 
   const handleSaveKeyPair = useCallback((keyPair: KeyPair) => {
+    if (!keyPair.publicKey) {
+      toast.error('Public key is required')
+      return
+    }
+
     const newKeyPairs = [...keyPairs]
     if (keyPair.index !== undefined) {
       newKeyPairs[keyPair.index] = {
@@ -66,8 +71,7 @@ export const useKeyPairManagement = ({
     const newKeyPairs = [...keyPairs]
     if (newKeyPairs[index]) {
       newKeyPairs[index] = {
-        publicKey: newKeyPairs[index].publicKey,
-        mnemonic: newKeyPairs[index].mnemonic,
+        ...newKeyPairs[index],
         note
       }
       setKeyPairs(newKeyPairs)

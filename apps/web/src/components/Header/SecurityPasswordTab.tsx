@@ -24,9 +24,7 @@ export const SecurityPasswordTab = ({
   setShowChangePassword,
   setActiveTab
 }: SecurityPasswordTabProps) => {
-  const tSecurity = useTranslations('settings.securityPassword')
-  const tButtons = useTranslations('buttons')
-  const tMessages = useTranslations('messages')
+  const t = useTranslations()
 
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
@@ -46,17 +44,17 @@ export const SecurityPasswordTab = ({
     const validatePassword = async () => {
       try {
         const isValid = await verifyPasswordFn(storedPasswordHash, currentPassword)
-        setCurrentPasswordError(isValid ? '' : tMessages('error.currentPasswordIncorrect'))
-        if (!isValid) toast.error(tMessages('error.currentPasswordIncorrect'))
+        setCurrentPasswordError(isValid ? '' : t('messages.error.currentPasswordIncorrect'))
+        if (!isValid) toast.error(t('messages.error.currentPasswordIncorrect'))
       } catch (error) {
         console.error('Password verification failed:', error)
-        setCurrentPasswordError(tMessages('error.failedVerifyPassword'))
-        toast.error(tMessages('error.failedVerifyPassword'))
+        setCurrentPasswordError(t('messages.error.failedVerifyPassword'))
+        toast.error(t('messages.error.failedVerifyPassword'))
       }
     }
 
     validatePassword()
-  }, [currentPassword, storedPasswordHash, tMessages])
+  }, [currentPassword, storedPasswordHash, t])
 
   // Handle set or change password
   const handleSetOrChangePassword = useCallback(async () => {
@@ -68,7 +66,7 @@ export const SecurityPasswordTab = ({
     }
 
     if (isPasswordSet && currentPasswordError) {
-      toast.error(tMessages('error.enterValidCurrentPassword'))
+      toast.error(t('messages.error.enterValidCurrentPassword'))
       return
     }
 
@@ -81,13 +79,13 @@ export const SecurityPasswordTab = ({
       setConfirmPassword('')
       setValidationError('')
       setCurrentPasswordError('')
-      toast.success(isPasswordSet ? tMessages('success.passwordUpdated') : tMessages('success.passwordSet'))
+      toast.success(isPasswordSet ? t('messages.success.passwordUpdated') : t('messages.success.passwordSet'))
     } catch (error) {
       console.error('Failed to save password:', error)
-      setValidationError(tMessages('error.failedSavePassword'))
-      toast.error(tMessages('error.failedSavePassword'))
+      setValidationError(t('messages.error.failedSavePassword'))
+      toast.error(t('messages.error.failedSavePassword'))
     }
-  }, [newPassword, confirmPassword, isPasswordSet, currentPasswordError, setStoredPasswordHash, setShowChangePassword, tMessages])
+  }, [newPassword, confirmPassword, isPasswordSet, currentPasswordError, setStoredPasswordHash, setShowChangePassword, t])
 
   return (
     <div className="p-4 sm:p-6">
@@ -95,18 +93,18 @@ export const SecurityPasswordTab = ({
         <div>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-              {tSecurity('title')}
+              {t('settings.securityPassword.title')}
             </h2>
             {isPasswordSet && (
               <Popover>
                 <PopoverTrigger asChild>
                   <Button variant="ghost" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500 cursor-pointer">
-                    {tSecurity('forgotPassword')}
+                    {t('settings.securityPassword.forgotPassword')}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-[90vw] sm:w-80">
                   <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                    {tSecurity('forgotPasswordHint')}
+                    {t('settings.securityPassword.forgotPasswordHint')}
                   </div>
                 </PopoverContent>
               </Popover>
@@ -118,7 +116,7 @@ export const SecurityPasswordTab = ({
               {!isPasswordSet && (
                 <Alert className="flex bg-[#E6F0FF]">
                   <AlertTitle className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    {tSecurity('notSet')}
+                    {t('settings.securityPassword.notSet')}
                   </AlertTitle>
                 </Alert>
               )}
@@ -127,7 +125,7 @@ export const SecurityPasswordTab = ({
                 {isPasswordSet && (
                   <div className="space-y-2">
                     <Label htmlFor="current-password-otp-input-0" className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                      {tSecurity('currentPassword')}
+                      {t('settings.securityPassword.currentPassword')}
                     </Label>
                     <CustomOtpInput
                       length={6}
@@ -147,7 +145,7 @@ export const SecurityPasswordTab = ({
 
                 <div className="space-y-2">
                   <Label htmlFor="new-password-otp-input-0" className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    {isPasswordSet ? tSecurity('newPassword') : tSecurity('setPassword')}
+                    {isPasswordSet ? t('settings.securityPassword.newPassword') : t('settings.securityPassword.setPassword')}
                   </Label>
                   <CustomOtpInput
                     length={6}
@@ -159,7 +157,7 @@ export const SecurityPasswordTab = ({
 
                 <div className="space-y-2">
                   <Label htmlFor="confirm-password-otp-input-0" className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    {isPasswordSet ? tSecurity('confirmNewPassword') : tSecurity('confirmPassword')}
+                    {isPasswordSet ? t('settings.securityPassword.confirmNewPassword') : t('settings.securityPassword.confirmPassword')}
                   </Label>
                   <CustomOtpInput
                     length={6}
@@ -172,7 +170,7 @@ export const SecurityPasswordTab = ({
 
                 {(validationError || (newPassword && confirmPassword && newPassword !== confirmPassword)) && (
                   <p className="text-left text-xs sm:text-sm text-red-600 dark:text-red-400">
-                    {validationError || tMessages('error.passwordsNotMatch')}
+                    {validationError || t('messages.error.passwordsNotMatch')}
                   </p>
                 )}
 
@@ -188,7 +186,7 @@ export const SecurityPasswordTab = ({
                       newPassword !== confirmPassword
                     }
                   >
-                    {tButtons('save')} {!isPasswordSet && tSecurity('title')}
+                    {t('buttons.save')} {!isPasswordSet && t('settings.securityPassword.title')}
                   </Button>
                 </div>
               </div>
@@ -198,15 +196,15 @@ export const SecurityPasswordTab = ({
       ) : (
         <div className="space-y-4 sm:space-y-6">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-            {tSecurity('title')}
+            {t('settings.securityPassword.title')}
           </h2>
           <div className="flex flex-col items-start space-y-4 sm:space-y-6 pb-4 sm:pb-6">
             <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-              {tSecurity('yourPassword')}
+              {t('settings.securityPassword.yourPassword')}
             </h3>
             <Input type="password" readOnly value="******" />
             <Button className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => setShowChangePassword(true)}>
-              {tButtons('change')}
+              {t('buttons.change')}
             </Button>
           </div>
         </div>

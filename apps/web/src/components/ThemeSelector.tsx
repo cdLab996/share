@@ -3,12 +3,17 @@
 import {
   Label,
   RadioGroup,
-  RadioGroupItem
+  RadioGroupItem,
+  cn
 } from '@nsiod/share-ui'
 import { useTranslations } from 'next-intl'
 import { useTheme } from 'next-themes'
 
-export function ThemeSelector() {
+interface ThemeSelectorProps {
+  className?: string
+}
+
+export function ThemeSelector({ className }: ThemeSelectorProps) {
   const { theme, setTheme } = useTheme()
   const t = useTranslations('settings.general')
 
@@ -19,7 +24,10 @@ export function ThemeSelector() {
   ]
 
   return (
-    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-3 sm:py-4 border-b border-gray-200 dark:border-gray-700 gap-2 sm:gap-0">
+    <div className={cn(
+      'flex flex-col sm:flex-row items-start sm:items-center justify-between py-3 sm:py-4 border-b border-gray-200 dark:border-gray-700 gap-2 sm:gap-0',
+      className
+    )}>
       <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">{t('theme')}</h3>
       <RadioGroup value={theme} onValueChange={setTheme} className="flex flex-col sm:flex-row gap-3 sm:gap-4">
         {themes.map((themeOption) => (

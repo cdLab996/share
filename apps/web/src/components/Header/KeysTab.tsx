@@ -1,12 +1,15 @@
 /* eslint-disable no-unused-vars */
 
 import { Button } from '@nsiod/share-ui'
+import { generateMnemonic, deriveKeyPair } from '@nsiod/share-utils'
 import { ChevronLeft } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
+import { toast } from 'sonner'
 
 import { CreateKeyPairForm } from '@/components/Header/CreateKeyPairForm'
 import { EmptyState } from '@/components/Header/EmptyState'
+import { ImportKeyForm } from '@/components/Header/ImportKeyForm'
 import { KeyPairTable } from '@/components/Header/KeyPairTable'
 import { useKeyPairManagement } from '@/hooks'
 import { KeyPair } from '@/types'
@@ -20,6 +23,8 @@ interface KeysTabProps {
   setEditKeyPair: (keyPair: KeyPair | null | ((prev: KeyPair | null) => KeyPair | null)) => void
 }
 
+type KeyFormMode = 'list' | 'create' | 'import'
+
 export const KeysTab = ({
   keyPairs,
   setKeyPairs,
@@ -28,8 +33,8 @@ export const KeysTab = ({
   editKeyPair,
   setEditKeyPair
 }: KeysTabProps) => {
-  const tOwnerKeys = useTranslations('settings.ownerKeys')
-  const tButtons = useTranslations('buttons')
+  const t = useTranslations()
+  const [formMode, setFormMode] = useState<KeyFormMode>('list')
 
   const {
     handleCreateKeyPair,
@@ -60,7 +65,7 @@ export const KeysTab = ({
 
   const handleMnemonicChange = useCallback((value: string) => {
     setEditKeyPair((prev: KeyPair | null) =>
-      prev ? { ...prev, mnemonic: value } : { publicKey: '', privateKey: '', mnemonic: value, note: '' }
+      prev ? { ...prev, mnemonic: value } : { publicKey: '', mnemonic: value, note: '' }
     )
   }, [setEditKeyPair])
 
@@ -68,54 +73,107 @@ export const KeysTab = ({
   const handleSave = useCallback(() => {
     if (editKeyPair) {
       handleSaveKeyPair(editKeyPair)
+      setFormMode('list')
     }
   }, [editKeyPair, handleSaveKeyPair])
 
-  if (showCreateKeyPair) {
+  // Handle back button
+  const handleBack = useCallback(() => {
+    setFormMode('list')
+    setShowCreateKeyPair(false)
+    setEditKeyPair(null)
+  }, [setShowCreateKeyPair, setEditKeyPair])
+
+  // Handle create key button
+  const handleCreateKey = useCallback(() => {
+    // Auto-generate mnemonic and key pair when creating
+    try {
+      const newMnemonic = generateMnemonic(128) // 12 words
+      const { publicKey: newPublicKey } = deriveKeyPair(newMnemonic)
+      
+      setEditKeyPair({ 
+        publicKey: newPublicKey, 
+        mnemonic: newMnemonic, 
+        note: '' 
+      })
+      setFormMode('create')
+      setShowCreateKeyPair(true)
+    } catch (error) {
+      console.error('Failed to generate key pair:', error)
+      toast.error(t('messages.error.failedGenerateKeyPair'))
+    }
+  }, [setEditKeyPair, setShowCreateKeyPair, t])
+
+  // Handle import key button
+  const handleImportKey = useCallback(() => {
+    setEditKeyPair({ publicKey: '', note: '', mnemonic: '' })
+    setFormMode('import')
+    setShowCreateKeyPair(true)
+  }, [setEditKeyPair, setShowCreateKeyPair])
+
+  // Render create key form
+  if (formMode === 'create') {
     return (
-      <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Button variant="ghost" size="icon" onClick={() => setShowCreateKeyPair(false)}>
+      <div className="p-6">
+        <div className="flex items-center mb-2">
+          <Button variant="secondary" size="icon" onClick={handleBack}>
             <ChevronLeft className="size-4" />
           </Button>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            {tOwnerKeys('title')}
-          </h2>
+          <span className="text-base font-medium text-gray-600 dark:text-gray-400">Back</span>
         </div>
-        <div className="flex justify-center text-center pt-2 pb-6">
+
+        <div className="border p-4 rounded-lg">
           <CreateKeyPairForm
             keyPair={editKeyPair}
             onNoteChange={handleNoteChange}
             onPublicKeyChange={handlePublicKeyChange}
             onMnemonicChange={handleMnemonicChange}
             onSave={handleSave}
-            onCancel={() => setShowCreateKeyPair(false)}
+            onCancel={handleBack}
           />
         </div>
       </div>
     )
   }
 
-  return (
-    <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-          {tOwnerKeys('title')}
-        </h2>
-        {keyPairs.length > 0 && (
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white" onClick={handleCreateKeyPair}>
-            {tButtons('createKey')}
+  // Render import key form
+  if (formMode === 'import') {
+    return (
+      <div className="p-6">
+        <div className="flex items-center mb-2">
+          <Button variant="secondary" size="icon" onClick={handleBack}>
+            <ChevronLeft className="size-4" />
           </Button>
-        )}
-      </div>
+          <span className="text-base font-medium text-gray-600 dark:text-gray-400">Back</span>
+        </div>
 
+        <div className="border p-4 rounded-lg">
+          <ImportKeyForm
+            keyPair={editKeyPair}
+            onNoteChange={handleNoteChange}
+            onPublicKeyChange={handlePublicKeyChange}
+            onMnemonicChange={handleMnemonicChange}
+            onSave={handleSave}
+            onCancel={handleBack}
+          />
+        </div>
+      </div>
+    )
+  }
+
+  // Render main list view
+  return (
+    <div className="p-6">
       {keyPairs.length === 0 ? (
         <EmptyState
           icon="/PublicKeys.svg"
-          title={tOwnerKeys('noKeys')}
-          description={tOwnerKeys('description')}
-          buttonText={tButtons('createKey')}
-          onButtonClick={handleCreateKeyPair}
+          title={t('settings.ownerKeys.noKeys')}
+          description={t('settings.ownerKeys.description')}
+          showDualButtons={true}
+          primaryButtonText={t('buttons.createKey')}
+          secondaryButtonText={t('buttons.importKey')}
+          onPrimaryClick={handleCreateKey}
+          onSecondaryClick={handleImportKey}
         />
       ) : (
         <KeyPairTable
@@ -126,6 +184,25 @@ export const KeysTab = ({
           onDelete={handleDeleteKeyPair}
           onSaveNote={handleSaveNoteInTable}
         />
+      )}
+
+      {/* Action buttons - only show when there are existing keys */}
+      {keyPairs.length > 0 && (
+        <div className="flex justify-end gap-3 mt-6">
+          <Button 
+            variant="outline"
+            className="border-blue-600 text-blue-600 hover:bg-blue-50 dark:border-blue-400 dark:text-blue-400"
+            onClick={handleImportKey}
+          >
+            {t('buttons.importKey')}
+          </Button>
+          <Button 
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+            onClick={handleCreateKey}
+          >
+            {t('buttons.createKey')}
+          </Button>
+        </div>
       )}
     </div>
   )

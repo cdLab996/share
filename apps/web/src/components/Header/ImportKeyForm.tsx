@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { Button, Label, Input, cn } from '@nsiod/share-ui'
 import { deriveKeyPair, validateMnemonic } from '@nsiod/share-utils'
-import { RefreshCw } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useState, useEffect, useCallback } from 'react'
 import { toast } from 'sonner'
@@ -9,7 +8,7 @@ import { toast } from 'sonner'
 import { validatePublicKey } from '@/lib/key'
 import { KeyPair } from '@/types'
 
-interface CreateKeyPairFormProps {
+interface ImportKeyFormProps {
   keyPair: KeyPair | null
   onNoteChange: (value: string) => void
   onPublicKeyChange: (value: string) => void
@@ -18,19 +17,18 @@ interface CreateKeyPairFormProps {
   onCancel: () => void
 }
 
-export const CreateKeyPairForm = ({
+export const ImportKeyForm = ({
   keyPair,
   onNoteChange,
   onPublicKeyChange,
   onMnemonicChange,
   onSave,
   onCancel
-}: CreateKeyPairFormProps) => {
+}: ImportKeyFormProps) => {
   const t = useTranslations()
 
   const [mnemonic, setMnemonic] = useState(keyPair?.mnemonic || '')
   const [publicKey, setPublicKey] = useState(keyPair?.publicKey || '')
-  const [isGenerating, setIsGenerating] = useState(false)
   const [mnemonicError, setMnemonicError] = useState('')
   const [isMnemonicValid, setIsMnemonicValid] = useState(false)
 
@@ -40,7 +38,6 @@ export const CreateKeyPairForm = ({
       return
     }
 
-    setIsGenerating(true)
     setMnemonicError('')
 
     try {
@@ -50,17 +47,12 @@ export const CreateKeyPairForm = ({
       // Sync to parent component
       onPublicKeyChange(newPublicKey)
       onMnemonicChange(mnemonicPhrase.trim())
-
-      toast.success(t('messages.success.keyPairGenerated'))
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : t('messages.error.failedGenerateKeyPair')
       setMnemonicError(errorMessage)
-      toast.error(errorMessage)
       console.error('Generate key pair error:', error)
       setPublicKey('')
       onPublicKeyChange('')
-    } finally {
-      setIsGenerating(false)
     }
   }, [onPublicKeyChange, onMnemonicChange, t])
 
@@ -102,7 +94,7 @@ export const CreateKeyPairForm = ({
   }, [mnemonic, generateKeyPairFromMnemonic, publicKey])
 
   // Save key pair
-  const handleSave = useCallback(() => {
+  const handleImportKey = useCallback(() => {
     if (!publicKey || !mnemonic) {
       toast.error(t('messages.error.keyPairIncomplete'))
       return
@@ -127,40 +119,34 @@ export const CreateKeyPairForm = ({
     <div className="w-full">
       <div className="w-full space-y-4">
         <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="mnemonicInput" className="text-sm font-medium text-gray-900 dark:text-gray-100">
-              {t('settings.ownerKeys.mnemonicPhrase')}
-            </Label>
-          </div>
+          <Label htmlFor="mnemonicInput" className="text-sm font-medium text-gray-900 dark:text-gray-100">
+            {t('settings.ownerKeys.mnemonicPhrase')}
+          </Label>
 
           <div className="relative">
-            <div className='flex items-center justify-between gap-2 mb-2'>
-              <div className='relative flex-1'>
-                <Input
-                  id="mnemonicInput"
-                  type="text"
-                  value={mnemonic}
-                  onChange={(e) => handleMnemonicChange(e.target.value)}
-                  className={cn(
-                    // Base styles
-                    'w-full font-mono text-xs sm:text-sm break-all resize-none rounded-md border bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-200',
-                    // Conditional border colors
-                    {
-                      // Error state (invalid mnemonic)
-                      'border-red-400 dark:border-red-500 focus:border-red-500 dark:focus:border-red-400':
-                        mnemonic && !isMnemonicValid,
-                      // Success state (valid mnemonic)
-                      'border-green-400 dark:border-green-500 focus:border-green-500 dark:focus:border-green-400':
-                        mnemonic && isMnemonicValid,
-                      // Default state (empty or no validation yet)
-                      'border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 focus:border-blue-500 dark:focus:border-blue-400':
-                        !mnemonic || (!isMnemonicValid && !mnemonic)
-                    }
-                  )}
-                  placeholder={t('settings.ownerKeys.generateNewMnemonic')}
-                />
-              </div>
-            </div>
+            <Input
+              id="mnemonicInput"
+              type="text"
+              value={mnemonic}
+              onChange={(e) => handleMnemonicChange(e.target.value)}
+              className={cn(
+                // Base styles
+                'w-full font-mono text-xs sm:text-sm break-all resize-none rounded-md border bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-200',
+                // Conditional border colors
+                {
+                  // Error state (invalid mnemonic)
+                  'border-red-400 dark:border-red-500 focus:border-red-500 dark:focus:border-red-400':
+                    mnemonic && !isMnemonicValid,
+                  // Success state (valid mnemonic)
+                  'border-green-400 dark:border-green-500 focus:border-green-500 dark:focus:border-green-400':
+                    mnemonic && isMnemonicValid,
+                  // Default state (empty or no validation yet)
+                  'border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 focus:border-blue-500 dark:focus:border-blue-400':
+                    !mnemonic || (!isMnemonicValid && !mnemonic)
+                }
+              )}
+              placeholder={t('settings.ownerKeys.enterMnemonic')}
+            />
           </div>
 
           {mnemonicError && (
@@ -180,28 +166,15 @@ export const CreateKeyPairForm = ({
               {t('settings.ownerKeys.validMnemonic')}
             </p>
           )}
-
-          {!mnemonic && (
-            <p className="text-left text-xs text-gray-500 dark:text-gray-400">
-              {t('settings.ownerKeys.mnemonicNote')}
-            </p>
-          )}
         </div>
 
-        {publicKey && (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
+        {/* Only show public key and note fields after mnemonic is valid */}
+        {mnemonic && isMnemonicValid && publicKey && (
+          <>
+            <div className="space-y-2">
               <Label htmlFor="generatedPublicKey" className="text-sm font-medium text-gray-900 dark:text-gray-100">
                 {t('settings.ownerKeys.publicKey')}
               </Label>
-              {isGenerating && (
-                <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-                  <RefreshCw className="size-3 mr-1 animate-spin" />
-                  {t('processing.generating')}
-                </div>
-              )}
-            </div>
-            <div className="relative">
               <Input
                 id="generatedPublicKey"
                 type="text"
@@ -211,30 +184,28 @@ export const CreateKeyPairForm = ({
                 placeholder={t('settings.ownerKeys.publicKeyPlaceholder')}
               />
             </div>
-          </div>
-        )}
 
-        {mnemonic && isMnemonicValid && (
-          <div className="space-y-2">
-            <p className="text-left text-xs text-amber-600 dark:text-amber-400">
-              {t('settings.ownerKeys.keepSafe')}
-            </p>
-          </div>
-        )}
+            <div className="space-y-2">
+              <p className="text-left text-xs text-amber-600 dark:text-amber-400">
+                {t('settings.ownerKeys.keepSafe')}
+              </p>
+            </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="keyPairNote" className="text-sm font-medium text-gray-900 dark:text-gray-100">
-            {t('input.note')}
-          </Label>
-          <Input
-            id="keyPairNote"
-            type="text"
-            value={keyPair?.note || ''}
-            onChange={(e) => onNoteChange(e.target.value)}
-            className="w-full font-mono text-xs sm:text-sm break-all resize-none rounded-md border border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-200"
-            placeholder={t('input.addNote')}
-          />
-        </div>
+            <div className="space-y-2">
+              <Label htmlFor="keyPairNote" className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                {t('input.note')}
+              </Label>
+              <Input
+                id="keyPairNote"
+                type="text"
+                value={keyPair?.note || ''}
+                onChange={(e) => onNoteChange(e.target.value)}
+                className="w-full font-mono text-xs sm:text-sm break-all resize-none rounded-md border border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-200"
+                placeholder={t('input.addNote')}
+              />
+            </div>
+          </>
+        )}
 
         <div className="flex justify-end gap-3">
           <Button variant="outline" size="sm" onClick={onCancel}>
@@ -243,10 +214,11 @@ export const CreateKeyPairForm = ({
           <Button
             className="bg-blue-600 hover:bg-blue-700 text-white"
             size="sm"
-            onClick={handleSave}
+            onClick={handleImportKey}
             disabled={!isMnemonicValid || !publicKey || !mnemonic}
           >
-            {t('buttons.saveKeyPair')}
+            {/* Show different button text based on state */}
+            {mnemonic && isMnemonicValid && publicKey ? t('buttons.saveKeyPair') : t('buttons.importKey')}
           </Button>
         </div>
       </div>
